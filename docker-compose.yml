@@ -20,6 +20,8 @@ services:
       - "8080:80"
     depends_on:
       - db
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin  
 
   weather_app:
     build: ./data_pipeline
