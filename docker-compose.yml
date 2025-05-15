@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:14
+    container_name: weather_db
+    restart: always
+    environment:
+      POSTGRES_USER: weather_user
+      POSTGRES_PASSWORD: weather_pass
+      POSTGRES_DB: weather_data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  weather_app:
+    build: ./data_pipeline
+    container_name: weather_app
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=weather_db
+      - DB_PORT=5432
+      - DB_NAME=weather_data
+      - DB_USER=weather_user
+      - DB_PASS=weather_pass
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
