@@ -1,14 +1,18 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:14
     container_name: weather_db
     restart: always
     environment:
-      POSTGRES_USER: weather_user
-      POSTGRES_PASSWORD: weather_pass
-      POSTGRES_DB: weather_data
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -18,20 +22,25 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - db
-    volumes:
-      - ./pgadmin-data:/var/lib/pgadmin  
 
   weather_app:
-    build: ./data_pipeline
+    build: .
     container_name: weather_app
     depends_on:
       - db
     environment:
-      - DB_HOST=weather_db
-      - DB_PORT=5432
-      - DB_NAME=weather_data
-      - DB_USER=weather_user
-      - DB_PASS=weather_pass
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+    command: ["python", "scripts/manage.py", "run"]
+
+volumes:
+  pgdata:
+  pgadmin-data:
