@@ -5,6 +5,8 @@ services:
     image: postgres:14
     container_name: weather_db
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -17,6 +19,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
+    env_file:
+      - .env
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -30,17 +34,28 @@ services:
   weather_app:
     build: .
     container_name: weather_app
+    volumes:
+      - .:/app
     depends_on:
       - db
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=weather_db
+      - DB_PORT=5432
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
-    command: ["python", "scripts/manage.py", "run"]
-
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    command: >
+      sh -c "echo 'Waiting for DB...' &&
+            /wait-for-it.sh weather_db:5432 --timeout=30 --strict &&
+            echo 'Running Alembic migrations...' &&
+            alembic upgrade head &&
+            echo 'Starting app...' &&
+            python scripts/manage.py run"
 volumes:
   pgdata:
   pgadmin-data:

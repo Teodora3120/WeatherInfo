@@ -6,3 +6,5 @@ psycopg2-binary
 requests
 typer[all]
 python-dotenv
+httpx
+alembic

@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
-
-Base = declarative_base()
+from app.db.base import Base
 
 class Weather(Base):
     __tablename__ = "weather"
