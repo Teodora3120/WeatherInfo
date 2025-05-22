@@ -13,7 +13,7 @@ mock_weather_response = {
 
 # Patch the actual fetch_weather function used by the API
 @pytest.mark.asyncio
-@patch("app.api.weather.fetch_weather", return_value=mock_weather_response)
+@patch("app.services.weather_service.fetch_weather", return_value=mock_weather_response)
 async def test_get_weather(mock_fetch_weather):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
