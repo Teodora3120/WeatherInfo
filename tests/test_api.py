@@ -19,6 +19,7 @@ async def test_get_weather(mock_fetch_weather):
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         response = await ac.get("/weather", params={"city": "Iasi"})
 
+    print(response)
     assert response.status_code == 200
     json_data = response.json()
     assert json_data["city"] == "Iasi"
