@@ -6,9 +6,9 @@ from app.main import app
 # Define a fake weather response
 mock_weather_response = {
     "city": "Iasi",
-    "temperature": 22.5,
-    "description": "clear sky",
-    "timestamp": "2025-05-22T12:00:00Z"
+    "temperature": 26.37,
+    "description": "light rain",
+    "timestamp": "2025-05-22T12:50:19.055226Z"
 }
 
 # Patch the actual fetch_weather function used by the API
