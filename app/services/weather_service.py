@@ -12,7 +12,7 @@ async def fetch_weather(city: str):
     return {
         "city": city,
         "temperature": data["main"]["temp"],
-        "description": data["weather"][0]["description"]
+        "description": data["weather"][0]["description"],
     }
 
 async def get_weather_data(city: str):
@@ -22,7 +22,13 @@ async def get_weather_data(city: str):
         weather = Weather(**weather_data)
         session.add(weather)
         session.commit()
-        return weather_data
+        session.refresh(weather)
+        return {
+            "city": weather.city,
+            "temperature": weather.temperature,
+            "description": weather.description,
+            "timestamp": weather.timestamp,
+        }
     except Exception as e:
         session.rollback()
         return {"error": str(e)}

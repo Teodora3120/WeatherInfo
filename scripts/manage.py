@@ -19,5 +19,23 @@ def up():
 def down():
     subprocess.run(["docker-compose", "down"])
 
+@app.command()
+def restart():
+    subprocess.run(["docker-compose", "restart"])
+
+@app.command()
+def migrate():
+    subprocess.run([
+        "docker-compose", "exec", "weather_app",
+        "alembic", "upgrade", "head"
+    ])
+
+@app.command()
+def makemigrations(message: str = typer.Option(..., "--message", "-m", help="Migration message")):
+    subprocess.run([
+        "docker-compose", "exec", "weather_app",
+        "alembic", "revision", "--autogenerate", "-m", message
+    ])
+
 if __name__ == "__main__":
     app()

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
+import datetime
 
 Base = declarative_base()
 
@@ -11,7 +12,7 @@ class Weather(Base):
     city = Column(String(50), nullable=False)
     temperature = Column(Float, nullable=False)
     description = Column(String(255))
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    timestamp = Column(DateTime(timezone=True), default=datetime.datetime.now(tz=None))
 
     def __repr__(self):
         return f"id: {self.id}, name: {self.city}"
