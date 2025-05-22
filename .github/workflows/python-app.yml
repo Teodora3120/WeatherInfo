@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+      OPENWEATHER_API_URL: ${{ secrets.OPENWEATHER_API_URL }}
     steps:
       - uses: actions/checkout@v3
 
