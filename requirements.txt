@@ -8,3 +8,4 @@ typer[all]
 python-dotenv
 httpx
 alembic
+pytest
