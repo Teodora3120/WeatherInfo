@@ -7,12 +7,14 @@ Base = declarative_base()
 
 class Weather(Base):
     __tablename__ = "weather"
-
-    id = Column(Integer, primary_key=True)
-    city = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)  # ✅ Fix here
+    city = Column(String, unique=True, nullable=False)
     temperature = Column(Float, nullable=False)
-    description = Column(String(255))
+    description = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=datetime.datetime.now(tz=None))
 
     def __repr__(self):
         return f"id: {self.id}, name: {self.city}"
+
+
+   
