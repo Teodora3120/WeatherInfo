@@ -10,3 +10,4 @@ httpx
 alembic
 pytest
 pytest-asyncio
+fastapi[all]

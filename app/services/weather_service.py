@@ -6,59 +6,45 @@ from app.db.session import SessionLocal
 from app.config import OPENWEATHER_API_KEY, OPENWEATHER_API_URL
 
 async def fetch_weather(city: str):
-    """Fetch weather data from the OpenWeather API."""
     url = f"{OPENWEATHER_API_URL}?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         response.raise_for_status()
         data = response.json()
+
     return {
-        "city": city,
+        "city": data["name"],
         "temperature": data["main"]["temp"],
+        "feels_like": data["main"]["feels_like"],
+        "temp_min": data["main"]["temp_min"],
+        "temp_max": data["main"]["temp_max"],
+        "pressure": data["main"]["pressure"],
+        "humidity": data["main"]["humidity"],
         "description": data["weather"][0]["description"],
+        "wind_speed": data["wind"]["speed"],
+        "wind_deg": data["wind"].get("deg")
     }
 
 async def get_weather_data(city: str):
-    """Get and save (or update) weather data for a city."""
     session: Session = SessionLocal()
     try:
         weather_data = await fetch_weather(city)
-
+        print("Weather data", weather_data)
         existing = session.query(Weather).filter_by(city=city).first()
-
+        print("existing", existing)
         if existing:
-            # Update existing record
-            existing.temperature = weather_data["temperature"]
-            existing.description = weather_data["description"]
+            for field, value in weather_data.items():
+                setattr(existing, field, value)
             existing.timestamp = datetime.utcnow()
             session.commit()
             session.refresh(existing)
+            return existing
 
-            return {
-                "city": existing.city,
-                "temperature": existing.temperature,
-                "description": existing.description,
-                "timestamp": existing.timestamp,
-            }
-
-        else:
-            # Insert new record
-            new_weather = Weather(
-                city=weather_data["city"],
-                temperature=weather_data["temperature"],
-                description=weather_data["description"],
-                timestamp=datetime.utcnow()
-            )
-            session.add(new_weather)
-            session.commit()
-            session.refresh(new_weather)
-
-            return {
-                "city": new_weather.city,
-                "temperature": new_weather.temperature,
-                "description": new_weather.description,
-                "timestamp": new_weather.timestamp,
-            }
+        new_weather = Weather(**weather_data, timestamp=datetime.utcnow())
+        session.add(new_weather)
+        session.commit()
+        session.refresh(new_weather)
+        return new_weather
 
     except Exception as e:
         session.rollback()
