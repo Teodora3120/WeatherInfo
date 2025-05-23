@@ -7,3 +7,6 @@ class WeatherResponse(BaseModel):
     temperature: float
     description: str
     timestamp: datetime
+
+    class Config:
+        orm_mode = True

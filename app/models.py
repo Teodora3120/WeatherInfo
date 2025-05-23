@@ -9,7 +9,7 @@ class Weather(Base):
     __tablename__ = "weather"
 
     id = Column(Integer, primary_key=True)
-    city = Column(String(50), nullable=False)
+    city = Column(String, primary_key=True, index=True)
     temperature = Column(Float, nullable=False)
     description = Column(String(255))
     timestamp = Column(DateTime(timezone=True), default=datetime.datetime.now(tz=None))
