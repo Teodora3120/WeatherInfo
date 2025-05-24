@@ -1,9 +1,10 @@
-import httpx
-from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.models import Weather
 from app.db.session import SessionLocal
 from app.config import OPENWEATHER_API_KEY, OPENWEATHER_API_URL
+from datetime import datetime
+import httpx
 
 async def fetch_weather(city: str):
     url = f"{OPENWEATHER_API_URL}?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
@@ -27,11 +28,19 @@ async def fetch_weather(city: str):
 
 async def get_weather_data(city: str):
     session: Session = SessionLocal()
+    weather_data = await fetch_weather(city)
     try:
-        weather_data = await fetch_weather(city)
-        print("Weather data", weather_data)
+        # First, try to insert new row
+        new_weather = Weather(**weather_data, timestamp=datetime.utcnow())
+        session.add(new_weather)
+        session.commit()
+        session.refresh(new_weather)
+        return new_weather
+
+    except IntegrityError:
+        # If duplicate, update existing
+        session.rollback()
         existing = session.query(Weather).filter_by(city=city).first()
-        print("existing", existing)
         if existing:
             for field, value in weather_data.items():
                 setattr(existing, field, value)
@@ -40,14 +49,11 @@ async def get_weather_data(city: str):
             session.refresh(existing)
             return existing
 
-        new_weather = Weather(**weather_data, timestamp=datetime.utcnow())
-        session.add(new_weather)
-        session.commit()
-        session.refresh(new_weather)
-        return new_weather
+        return {"error": "Failed to insert or update weather record."}
 
     except Exception as e:
         session.rollback()
         return {"error": str(e)}
+
     finally:
         session.close()
