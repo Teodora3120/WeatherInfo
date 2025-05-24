@@ -29,6 +29,10 @@ python scripts/manage.py build  # Build Docker images
 python scripts/manage.py up     # Start all services
 python scripts/manage.py run    # Start FastAPI
 python scripts/manage.py down   # Stop all services
+python scripts/manage.py restart   # Restart all services
+python scripts/manage.py makemigrations -m ''   # Creates the migration files
+python scripts/manage.py migrate   # Applies the migrations
+
 ```
 
 Once it’s up, your API lives at `http://localhost:8000`.
@@ -36,7 +40,7 @@ Once it’s up, your API lives at `http://localhost:8000`.
 ## 📚 API Docs
 
 Explore and test the API right in your browser at  
-`http://localhost:8000/docs` (thanks, Swagger UI!).
+`http://localhost:8000/docs`.
 
 ## 🛠️ Tech Stack
 
@@ -54,6 +58,4 @@ See WeatherInfo in action:
 
 MIT License – free to use, share, and improve.
 
----
 
-WeatherInfo makes building weather apps a breeze. Give it a try and let us know what you think!
