@@ -6,7 +6,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://your-frontend-domain.com",
+    "https://v0-react-weather-app-sepia.vercel.app",
 ]
 
 app.add_middleware(
